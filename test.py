@@ -3,11 +3,12 @@ import math
 from sklearn.metrics import f1_score, accuracy_score, ConfusionMatrixDisplay
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 class Test:
 
-    def __init__(self, pred, test):
+    def __init__(self, test, pred):
         """
         :param pred: pd.Series or pd.DataFrame
         :param test: pd.Series or pd.DataFrame
@@ -16,7 +17,6 @@ class Test:
         self.test = test
         self.f1 = None
         self.accuracy = None
-        self.confusion = None
         self.mse = None
         self.mae = None
         self.rmse = None
@@ -31,7 +31,7 @@ class Test:
         if self.f1 is None:
             self.f1 = f1_score(self.test, self.pred)
 
-        print(f'f1:\t{self.f1.2f}')
+        print(f'f1: \t{self.f1: .2f}')
         return self.f1
 
     def get_accuracy(self):
@@ -42,7 +42,7 @@ class Test:
         if self.accuracy is None:
             self.accuracy = accuracy_score(self.test, self.pred)
 
-        print(f'accuracy:\t{self.accuracy.2f}')
+        print(f'accuracy: \t{self.accuracy: .2f}')
         return self.accuracy
 
     def get_confusion(self):
@@ -51,12 +51,9 @@ class Test:
 
         :return: sklearn.metrics.ConfusionMatrixDisplay
         """
-        if self.confusion is None:
-            self.confusion = ConfusionMatrixDisplay.from_predictions(self.test, self.pred)
 
-        self.confusion
+        ConfusionMatrixDisplay.from_predictions(self.test, self.pred)
         plt.show()
-        return self.confusion
 
     def quick_clf(self):
         """
@@ -80,7 +77,7 @@ class Test:
         if self.mse is None:
             self.mse = mean_squared_error(self.test, self.pred)
 
-        print(f'MSE:\t{self.mse.2f}')
+        print(f'MSE: \t{self.mse: .2f}')
         return self.mse
 
     def get_mae(self):
@@ -92,7 +89,7 @@ class Test:
         if self.mae is None:
             self.mae = mean_absolute_error(self.test, self.pred)
 
-        print(f'MAE\t{self.mae.2f}')
+        print(f'MAE: \t{self.mae: .2f}')
 
     def get_rmse(self):
         """
@@ -103,12 +100,12 @@ class Test:
         if self.rmse is None:
             self.rmse = math.sqrt(self.mse)
 
-        print(f'RMSE\t{self.rmse.2f}')
+        print(f'RMSE: \t{self.rmse: .2f}')
         return self.rmse
 
     def quick_reg(self):
         """
-        Used to get quick info about regressor's quality: shows mse, mae and rmse scores.
+        Used to get quick info about repressor's quality: shows mse, mae and rmse scores.
 
         :return: None
         """
@@ -116,5 +113,13 @@ class Test:
         self.get_mse()
         self.get_mae()
         self.get_rmse()
-    
 
+
+if __name__ == '__main__':
+
+    y_test = pd.Series([0, 0, 1, 0, 1, 1, 0])
+    y_pred = pd.Series([0, 1, 0, 0, 1, 1, 1])
+
+    t = Test(y_test, y_pred)
+    t.get_f1()
+    t.get_accuracy()
