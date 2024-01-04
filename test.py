@@ -1,5 +1,8 @@
+import math
+
 from sklearn.metrics import f1_score, accuracy_score, ConfusionMatrixDisplay
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+import matplotlib.pyplot as plt
 
 
 class Test:
@@ -25,21 +28,35 @@ class Test:
         :return: float
         """
 
-       pass
+        if self.f1 is None:
+            self.f1 = f1_score(self.test, self.pred)
+
+        print(f'f1:\t{self.f1.2f}')
+        return self.f1
 
     def get_accuracy(self):
         """
         Shows and returns accuracy score. It can calculate score if it don't yet calculated.
-        :return: flat
+        :return: float
         """
-        if self.
+        if self.accuracy is None:
+            self.accuracy = accuracy_score(self.test, self.pred)
+
+        print(f'accuracy:\t{self.accuracy.2f}')
+        return self.accuracy
 
     def get_confusion(self):
         """
         Shows confusion matrix. It can calculate score if it don't yet calculated.
-        :return:
+
+        :return: sklearn.metrics.ConfusionMatrixDisplay
         """
-        pass
+        if self.confusion is None:
+            self.confusion = ConfusionMatrixDisplay.from_predictions(self.test, self.pred)
+
+        self.confusion
+        plt.show()
+        return self.confusion
 
     def quick_clf(self):
         """
@@ -48,7 +65,10 @@ class Test:
 
         :return: None
         """
-        pass
+
+        self.get_f1()
+        self.get_accuracy()
+        self.get_confusion()
 
     def get_mse(self):
         """
@@ -56,7 +76,12 @@ class Test:
 
         :return: float
         """
-        pass
+
+        if self.mse is None:
+            self.mse = mean_squared_error(self.test, self.pred)
+
+        print(f'MSE:\t{self.mse.2f}')
+        return self.mse
 
     def get_mae(self):
         """
@@ -64,7 +89,10 @@ class Test:
 
         :return:
         """
-        pass
+        if self.mae is None:
+            self.mae = mean_absolute_error(self.test, self.pred)
+
+        print(f'MAE\t{self.mae.2f}')
 
     def get_rmse(self):
         """
@@ -72,7 +100,11 @@ class Test:
 
         :return: float
         """
-        pass
+        if self.rmse is None:
+            self.rmse = math.sqrt(self.mse)
+
+        print(f'RMSE\t{self.rmse.2f}')
+        return self.rmse
 
     def quick_reg(self):
         """
@@ -80,5 +112,9 @@ class Test:
 
         :return: None
         """
-        pass
+
+        self.get_mse()
+        self.get_mae()
+        self.get_rmse()
+    
 
