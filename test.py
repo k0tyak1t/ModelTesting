@@ -1,9 +1,10 @@
 import math
 
-from sklearn.metrics import f1_score, accuracy_score, ConfusionMatrixDisplay
+from sklearn.metrics import f1_score, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+import matplotlib
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 
 
 class Test:
@@ -15,15 +16,18 @@ class Test:
         """
         self.pred = pred
         self.test = test
+
         self.f1 = None
         self.accuracy = None
+        self.confusion = None
+
         self.mse = None
         self.mae = None
         self.rmse = None
 
     def get_f1(self):
         """
-        Shows and returns f1 score. It can calculate score if it don't yet calculated.
+        Returns f1 score. It can calculate score if it don't yet calculated.
 
         :return: float
         """
@@ -31,29 +35,42 @@ class Test:
         if self.f1 is None:
             self.f1 = f1_score(self.test, self.pred)
 
-        print(f'f1: \t{self.f1: .2f}')
         return self.f1
 
     def get_accuracy(self):
         """
-        Shows and returns accuracy score. It can calculate score if it don't yet calculated.
+        Returns accuracy score. It can calculate score if it don't yet calculated.
         :return: float
         """
         if self.accuracy is None:
             self.accuracy = accuracy_score(self.test, self.pred)
 
-        print(f'accuracy: \t{self.accuracy: .2f}')
         return self.accuracy
 
     def get_confusion(self):
         """
-        Shows confusion matrix. It can calculate score if it don't yet calculated.
-
-        :return: sklearn.metrics.ConfusionMatrixDisplay
+        Returns confusion matrix
+        :return: np.array
         """
+        if self.confusion is None:
+            self.confusion = confusion_matrix(self.test, self.pred)
 
-        ConfusionMatrixDisplay.from_predictions(self.test, self.pred)
-        plt.show()
+        return self.confusion
+
+    def show_confusion(self):
+        """
+        Shows confusion matrix
+
+        :return: None
+        """
+        try:
+            ConfusionMatrixDisplay(self.get_confusion()).plot()
+            plt.show()
+        except AttributeError:
+            if matplotlib.get_backend() == 'TkAgg':
+                raise Exception('Critical Error! Please report.')
+            matplotlib.use('TkAgg')
+            self.show_confusion()
 
     def quick_clf(self):
         """
@@ -63,13 +80,13 @@ class Test:
         :return: None
         """
 
-        self.get_f1()
-        self.get_accuracy()
-        self.get_confusion()
+        self.show('f1', self.get_f1())
+        self.show('accuracy', self.get_accuracy())
+        self.show_confusion()
 
     def get_mse(self):
         """
-        Shows and returns MSE score. It can calculate score if it don't yet calculated.
+        Returns MSE score. It can calculate score if it don't yet calculated.
 
         :return: float
         """
@@ -77,31 +94,40 @@ class Test:
         if self.mse is None:
             self.mse = mean_squared_error(self.test, self.pred)
 
-        print(f'MSE: \t{self.mse: .2f}')
         return self.mse
 
     def get_mae(self):
         """
-        Shows and returns MAE score. It can calculate score if it don't yet calculated.
+        Returns MAE score. It can calculate score if it don't yet calculated.
 
-        :return:
+        :return: float
         """
         if self.mae is None:
             self.mae = mean_absolute_error(self.test, self.pred)
 
-        print(f'MAE: \t{self.mae: .2f}')
+        return self.mae
 
     def get_rmse(self):
         """
-        Shows and returns RMSE score. It can calculate score if it don't yet calculated.
+        Returns RMSE score. It can calculate score if it don't yet calculated.
 
         :return: float
         """
         if self.rmse is None:
             self.rmse = math.sqrt(self.mse)
 
-        print(f'RMSE: \t{self.rmse: .2f}')
         return self.rmse
+
+    @staticmethod
+    def show(name, value):
+        """
+        Prints value in the standard form: name:value (x.xx)
+
+        :param name: str
+        :param value: float
+        :return: None
+        """
+        print(f'{name}:    {value: .2f}')
 
     def quick_reg(self):
         """
@@ -110,16 +136,27 @@ class Test:
         :return: None
         """
 
-        self.get_mse()
-        self.get_mae()
-        self.get_rmse()
+        self.show('MSE', self.get_mse())
+        self.show('MAE', self.get_mae())
+        self.show('RMSE', self.get_rmse())
+
+# ============================================== #
+# The code below is the only for module testing! #
+# Should be used like module                     #
+# ============================================== #
+
+
+def testcases():
+    y_test = np.array([0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0])
+    y_pred = np.array([0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1])
+
+    t = Test(y_test, y_pred)
+    t.quick_reg()
+    print('=' * 10)
+    t.quick_clf()
 
 
 if __name__ == '__main__':
+    testcases()
 
-    y_test = pd.Series([0, 0, 1, 0, 1, 1, 0])
-    y_pred = pd.Series([0, 1, 0, 0, 1, 1, 1])
 
-    t = Test(y_test, y_pred)
-    t.get_f1()
-    t.get_accuracy()
